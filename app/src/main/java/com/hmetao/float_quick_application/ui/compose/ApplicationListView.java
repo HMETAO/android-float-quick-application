@@ -20,7 +20,6 @@ public class ApplicationListView extends LinearLayout {
     public ApplicationListView(Context context, List<AppInfo> apps) {
         super(context);
         this.context = context;
-
         // 渲染app_item到view
         renderItem(apps);
     }
@@ -29,8 +28,15 @@ public class ApplicationListView extends LinearLayout {
         for (AppInfo app : apps) {
             if (app.appIcon == null) continue;
             // 生成item
-            LinearLayout root = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.item_application, this, true);
-            ((ImageView) root.findViewById(R.id.applicationIcon)).setImageDrawable(app.appIcon);
+            LinearLayout root = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.item_application, this, false);
+            ImageView imageView = root.findViewById(R.id.applicationIcon);
+            // 设置图片
+            imageView.setImageDrawable(app.appIcon);
+            // 设置缩放
+            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+            root.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+            // 添加到主view
+            addView(root);
         }
     }
 }

@@ -24,10 +24,8 @@ import com.hmetao.float_quick_application.ui.service.FloatService;
 import java.util.List;
 
 public class MainActivity extends BaseActivity {
-
     private static final String TAG = MainActivity.class.getSimpleName();
     private ActivityMainBinding mainBinding;
-//    private List<AppInfo> apps;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,34 +33,6 @@ public class MainActivity extends BaseActivity {
         // 开启悬浮窗服务
         startService(new Intent(this, FloatService.class));
     }
-//
-//    @Override
-//    protected void beforeInitView() {
-//        // 获取apps
-//        apps = getAppInfo(getBaseContext());
-//        Log.d(TAG, "apps: " + apps);
-//    }
-
-    @Override
-    public void initView() {
-        // 构建悬浮窗主view
-//        ApplicationListView view = buildApplicationListView();
-//
-//        LinearLayout root = mainBinding.getRoot();
-//        root.addView(view);
-    }
-
-//    private ApplicationListView buildApplicationListView() {
-//        ApplicationListView applicationListView = new ApplicationListView(this, apps);
-//        // 设置布局参数
-//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-//                LinearLayout.LayoutParams.WRAP_CONTENT,
-//                LinearLayout.LayoutParams.WRAP_CONTENT);
-//        applicationListView.setLayoutParams(params);
-//        // 设置方向
-//        applicationListView.setOrientation(LinearLayout.VERTICAL);
-//        return applicationListView;
-//    }
 
     @Override
     protected View getRootView() {

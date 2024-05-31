@@ -17,16 +17,20 @@ import com.hmetao.float_quick_application.ui.compose.ApplicationListView;
 
 public class FloatService extends Service {
 
+    private ApplicationListView floatRootView;
+    private WindowManager wm;
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
+        floatRootView = buildApplicationListView();
         initWindow();
         return super.onStartCommand(intent, flags, startId);
     }
 
+
     private void initWindow() {
         // 获取wm
-        WindowManager wm = WindowManagerHelper.instance.getWindowManager(this);
+        wm = WindowManagerHelper.instance.getWindowManager(this);
         // 创建布局参数
         WindowManager.LayoutParams params = new WindowManager.LayoutParams();
         //这里需要进行不同的设置
@@ -47,9 +51,9 @@ public class FloatService extends Service {
         params.height = WindowManager.LayoutParams.WRAP_CONTENT;
         //这段非常重要，是后续是否穿透点击的关键
         params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE  //表示悬浮窗口不需要获取焦点，这样用户点击悬浮窗口以外的区域，就不需要关闭悬浮窗口。
-                | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;//表示悬浮窗口不会阻塞事件传递，即用户点击悬浮窗口以外的区域时，事件会传递给后面的窗口处理。
+                | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;    //表示悬浮窗口不会阻塞事件传递，即用户点击悬浮窗口以外的区域时，事件会传递给后面的窗口处理。
         //这里的引入布局文件的方式，也可以动态添加控件
-        wm.addView(buildApplicationListView(), params);
+        wm.addView(, params);
     }
 
     private ApplicationListView buildApplicationListView() {
@@ -67,6 +71,9 @@ public class FloatService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (floatRootView != null) {
+            wm.removeView(floatRootView);
+        }
     }
 
     @Override

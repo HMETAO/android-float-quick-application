@@ -10,6 +10,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class AppUtil {
+    /**
+     * 获取apps但不包含系统app
+     * @param context 上下文
+     * @return app列表
+     */
     public static List<AppInfo> getAppInfo(Context context) {
         // 获取已经安装的所有应用, PackageInfo　系统类，包含应用信息
         PackageManager pm = context.getPackageManager();
