@@ -53,7 +53,7 @@ public class FloatService extends Service {
         params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE  //表示悬浮窗口不需要获取焦点，这样用户点击悬浮窗口以外的区域，就不需要关闭悬浮窗口。
                 | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;    //表示悬浮窗口不会阻塞事件传递，即用户点击悬浮窗口以外的区域时，事件会传递给后面的窗口处理。
         //这里的引入布局文件的方式，也可以动态添加控件
-        wm.addView(, params);
+        wm.addView(floatRootView, params);
     }
 
     private ApplicationListView buildApplicationListView() {
