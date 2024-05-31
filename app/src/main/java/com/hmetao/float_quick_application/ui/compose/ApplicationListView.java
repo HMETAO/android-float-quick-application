@@ -19,9 +19,8 @@ public class ApplicationListView extends LinearLayout {
 
     public ApplicationListView(Context context, List<AppInfo> apps) {
         super(context);
-
-
         this.context = context;
+
         // 渲染app_item到view
         renderItem(apps);
     }
