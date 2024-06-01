@@ -2,6 +2,7 @@ package com.hmetao.float_quick_application.ui.compose;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -37,6 +38,15 @@ public class ApplicationListView extends LinearLayout {
             root.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
             // 添加到主view
             addView(root);
+            // 设置点击事件
+            root.setOnClickListener(v -> {
+                // 跳转应用
+                Intent wantStartApp = context.getPackageManager().getLaunchIntentForPackage(app.packageName);
+                context.startActivity(wantStartApp);
+            });
         }
+
     }
+
+
 }

@@ -9,6 +9,7 @@ public class AppInfo {
     public String packageName;
 
     public Drawable appIcon;
+
     public String appName;
 
     public AppInfo() {

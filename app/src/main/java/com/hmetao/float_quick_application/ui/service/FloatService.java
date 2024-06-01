@@ -33,7 +33,7 @@ public class FloatService extends Service {
         wm = WindowManagerHelper.instance.getWindowManager(this);
         // 创建布局参数
         WindowManager.LayoutParams params = new WindowManager.LayoutParams();
-        //这里需要进行不同的设置
+        //这里需要进行不同的版本兼容设置
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             params.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
         } else {
