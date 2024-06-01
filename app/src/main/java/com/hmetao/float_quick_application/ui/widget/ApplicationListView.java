@@ -1,22 +1,22 @@
-package com.hmetao.float_quick_application.ui.compose;
+package com.hmetao.float_quick_application.ui.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.hmetao.float_quick_application.R;
-import com.hmetao.float_quick_application.databinding.ItemApplicationBinding;
 import com.hmetao.float_quick_application.domain.AppInfo;
 
 import java.util.List;
 
 @SuppressLint("ViewConstructor")
 public class ApplicationListView extends LinearLayout {
+    private static final String TAG = ApplicationItemView.class.getSimpleName();
     private final Context context;
+
 
     public ApplicationListView(Context context, List<AppInfo> apps) {
         super(context);
@@ -24,6 +24,7 @@ public class ApplicationListView extends LinearLayout {
         // 渲染app_item到view
         renderItem(apps);
     }
+
 
     private void renderItem(List<AppInfo> apps) {
         for (AppInfo app : apps) {
@@ -35,18 +36,18 @@ public class ApplicationListView extends LinearLayout {
             imageView.setImageDrawable(app.appIcon);
             // 设置缩放
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-            root.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+            root.setTag(app);
             // 添加到主view
             addView(root);
-            // 设置点击事件
             root.setOnClickListener(v -> {
-                // 跳转应用
-                Intent wantStartApp = context.getPackageManager().getLaunchIntentForPackage(app.packageName);
-                context.startActivity(wantStartApp);
+                startApp(app);
             });
         }
-
     }
 
+    private void startApp(AppInfo app) {
+        Intent intent = context.getPackageManager().getLaunchIntentForPackage(app.packageName);
+        context.startActivity(intent);
+    }
 
 }
