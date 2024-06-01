@@ -2,12 +2,9 @@ package com.hmetao.float_quick_application.ui.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
-import android.view.LayoutInflater;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.hmetao.float_quick_application.R;
 import com.hmetao.float_quick_application.domain.AppInfo;
 
 import java.util.List;
@@ -18,20 +15,20 @@ public class ApplicationListView extends LinearLayout {
     private final Context context;
 
 
-    public ApplicationListView(Context context, List<AppInfo> apps) {
+    public ApplicationListView(Context context, List<AppInfo> apps, ApplicationItemView.OnTouchMoveListener onTouchMoveListener) {
         super(context);
         this.context = context;
         // 渲染app_item到view
-        renderItem(apps);
+        renderItem(apps, onTouchMoveListener);
     }
 
 
-    private void renderItem(List<AppInfo> apps) {
+    private void renderItem(List<AppInfo> apps, ApplicationItemView.OnTouchMoveListener onTouchMoveListener) {
         for (AppInfo app : apps) {
             if (app.appIcon == null) continue;
             // 生成item
-            LinearLayout root = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.item_application, this, false);
-            ImageView imageView = root.findViewById(R.id.applicationIcon);
+            ApplicationItemView root = new ApplicationItemView(context);
+            ImageView imageView = root.imageView;
             // 设置图片
             imageView.setImageDrawable(app.appIcon);
             // 设置缩放
@@ -39,15 +36,9 @@ public class ApplicationListView extends LinearLayout {
             root.setTag(app);
             // 添加到主view
             addView(root);
-            root.setOnClickListener(v -> {
-                startApp(app);
-            });
+            root.setOnTouchMoveListener(onTouchMoveListener);
         }
     }
 
-    private void startApp(AppInfo app) {
-        Intent intent = context.getPackageManager().getLaunchIntentForPackage(app.packageName);
-        context.startActivity(intent);
-    }
 
 }

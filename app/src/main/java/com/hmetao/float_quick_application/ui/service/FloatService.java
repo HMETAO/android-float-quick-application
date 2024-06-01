@@ -5,24 +5,25 @@ import static com.hmetao.float_quick_application.utils.AppUtil.getAppInfo;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
-import androidx.core.widget.NestedScrollView;
-
 import com.hmetao.float_quick_application.domain.AppInfo;
 import com.hmetao.float_quick_application.help.WindowManagerHelper;
+import com.hmetao.float_quick_application.ui.widget.ApplicationItemView;
 import com.hmetao.float_quick_application.ui.widget.ApplicationListView;
 import com.hmetao.float_quick_application.utils.DensityUtil;
 
 import java.util.List;
 
-public class FloatService extends Service {
+public class FloatService extends Service implements ApplicationItemView.OnTouchMoveListener {
 
     private static final String TAG = FloatService.class.getSimpleName();
-    private NestedScrollView floatRootView;
+    private View floatRootView;
     private WindowManager wm;
     private List<AppInfo> apps;
+    private WindowManager.LayoutParams windowLayoutParams;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -35,20 +36,22 @@ public class FloatService extends Service {
     private void initWindow() {
         // 获取wm
         wm = WindowManagerHelper.instance.getWindowManager(this);
-        WindowManager.LayoutParams windowLayoutParams = WindowManagerHelper.instance.
-                buildWindowLayoutParams(WindowManager.LayoutParams.WRAP_CONTENT, DensityUtil.dip2px(this, 54 * 5));
+        windowLayoutParams = WindowManagerHelper.instance.
+                buildWindowLayoutParams(WindowManager.LayoutParams.WRAP_CONTENT,
+                        DensityUtil.dip2px(this, 54 * 5));
         wm.addView(floatRootView, windowLayoutParams);
     }
 
-    private NestedScrollView buildApplicationListRootView() {
-        NestedScrollView nestedScrollView = new NestedScrollView(this);
+    private View buildApplicationListRootView() {
+//        NestedScrollView nestedScrollView = new NestedScrollView(this);
         apps = getAppInfo(getBaseContext());
-        ApplicationListView applicationListView = new ApplicationListView(this, apps);
+        ApplicationListView applicationListView = new ApplicationListView(this, apps, this);
         // 设置方向
         applicationListView.setOrientation(LinearLayout.VERTICAL);
         // 设置根root的长宽
-        nestedScrollView.addView(applicationListView);
-        return nestedScrollView;
+//        nestedScrollView.addView(applicationListView);
+        return applicationListView;
+//        return nestedScrollView;
     }
 
     @Override
@@ -64,4 +67,11 @@ public class FloatService extends Service {
         return null;
     }
 
+
+    @Override
+    public void onTouchMove(float dx, float dy) {
+        windowLayoutParams.x += (int) dx;
+        windowLayoutParams.y += (int) dy;
+        wm.updateViewLayout(floatRootView, windowLayoutParams);
+    }
 }
