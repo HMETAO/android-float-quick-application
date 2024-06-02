@@ -65,6 +65,9 @@ public class ApplicationItemView extends LinearLayout {
                     // 打开app
                     AppInfo app = (AppInfo) getTag();
                     startApp(app);
+                } else {
+                    if (onTouchMoveListener != null)
+                        onTouchMoveListener.onTouchMoveStop();
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -84,7 +87,6 @@ public class ApplicationItemView extends LinearLayout {
                     if (onTouchMoveListener != null) {
                         onTouchMoveListener.onTouchMove(dx, dy);
                     }
-
                 }
                 break;
             case MotionEvent.ACTION_DOWN:
@@ -108,6 +110,8 @@ public class ApplicationItemView extends LinearLayout {
 
     public interface OnTouchMoveListener {
         void onTouchMove(float dx, float dy);
+
+        void onTouchMoveStop();
     }
 
     public void setOnTouchMoveListener(OnTouchMoveListener onTouchMoveListener) {

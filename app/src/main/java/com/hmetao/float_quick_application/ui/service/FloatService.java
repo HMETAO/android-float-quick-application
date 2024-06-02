@@ -5,7 +5,6 @@ import static com.hmetao.float_quick_application.utils.AppUtil.getAppInfo;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
@@ -13,6 +12,7 @@ import com.hmetao.float_quick_application.domain.AppInfo;
 import com.hmetao.float_quick_application.help.WindowManagerHelper;
 import com.hmetao.float_quick_application.ui.widget.ApplicationItemView;
 import com.hmetao.float_quick_application.ui.widget.ApplicationListView;
+import com.hmetao.float_quick_application.ui.widget.MyNestedScrollView;
 import com.hmetao.float_quick_application.utils.DensityUtil;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
 public class FloatService extends Service implements ApplicationItemView.OnTouchMoveListener {
 
     private static final String TAG = FloatService.class.getSimpleName();
-    private View floatRootView;
+    private MyNestedScrollView floatRootView;
     private WindowManager wm;
     private List<AppInfo> apps;
     private WindowManager.LayoutParams windowLayoutParams;
@@ -42,16 +42,17 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
         wm.addView(floatRootView, windowLayoutParams);
     }
 
-    private View buildApplicationListRootView() {
-//        NestedScrollView nestedScrollView = new NestedScrollView(this);
+    private MyNestedScrollView buildApplicationListRootView() {
+        MyNestedScrollView nestedScrollView = new MyNestedScrollView(this);
         apps = getAppInfo(getBaseContext());
         ApplicationListView applicationListView = new ApplicationListView(this, apps, this);
         // 设置方向
         applicationListView.setOrientation(LinearLayout.VERTICAL);
         // 设置根root的长宽
-//        nestedScrollView.addView(applicationListView);
-        return applicationListView;
-//        return nestedScrollView;
+        nestedScrollView.addView(applicationListView);
+
+//        return applicationListView;
+        return nestedScrollView;
     }
 
     @Override
@@ -72,6 +73,12 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
     public void onTouchMove(float dx, float dy) {
         windowLayoutParams.x += (int) dx;
         windowLayoutParams.y += (int) dy;
+        floatRootView.setScrollingEnabled(false);
         wm.updateViewLayout(floatRootView, windowLayoutParams);
+    }
+
+    @Override
+    public void onTouchMoveStop() {
+        floatRootView.setScrollingEnabled(true);
     }
 }
