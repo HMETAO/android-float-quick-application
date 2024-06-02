@@ -3,6 +3,8 @@ package com.hmetao.float_quick_application.help;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.os.Build;
+import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.WindowManager;
 
 public class WindowManagerHelper {
@@ -15,7 +17,20 @@ public class WindowManagerHelper {
         return (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     }
 
-    public WindowManager.LayoutParams buildWindowLayoutParams(int width, int height) {
+
+    public int getScreenHeight(Context context) {
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager(context).getDefaultDisplay().getMetrics(dm);
+        return dm.heightPixels;
+    }
+
+    public int getScreenWidth(Context context) {
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager(context).getDefaultDisplay().getMetrics(dm);
+        return dm.widthPixels;
+    }
+
+    public WindowManager.LayoutParams buildWindowLayoutParams(int width, int height, int x, int y) {
         // 创建布局参数
         WindowManager.LayoutParams windowLayoutParams = new WindowManager.LayoutParams();
         //这里需要进行不同的版本兼容设置
@@ -27,8 +42,9 @@ public class WindowManagerHelper {
         //设置透明度
         windowLayoutParams.alpha = 1.0f;
         //设置内部视图对齐方式
-//        windowLayoutParams.gravity = Gravity.END | Gravity.CENTER_VERTICAL;
-//        windowLayoutParams.y = -(height / 4);
+        windowLayoutParams.gravity = Gravity.START | Gravity.TOP;
+        windowLayoutParams.x = x;
+        windowLayoutParams.y = y;
         //是指定窗口的像素格式为 RGBA_8888。
         //使用 RGBA_8888 像素格式的窗口可以在保持高质量图像的同时实现透明度效果。
         windowLayoutParams.format = PixelFormat.RGBA_8888;
