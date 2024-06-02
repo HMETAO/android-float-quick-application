@@ -20,14 +20,23 @@ import java.util.List;
 public class FloatService extends Service implements ApplicationItemView.OnTouchMoveListener {
 
     private static final String TAG = FloatService.class.getSimpleName();
+
+    // windowManagerHelper
+    WindowManagerHelper helper = WindowManagerHelper.instance;
+
+    // 根root
     private MyNestedScrollView floatRootView;
+
+    // 悬浮框wm
     private WindowManager wm;
-    private List<AppInfo> apps;
+
+    // 悬浮框布局参数
     private WindowManager.LayoutParams windowLayoutParams;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         floatRootView = buildApplicationListRootView();
+        // 初始化window
         initWindow();
         return super.onStartCommand(intent, flags, startId);
     }
@@ -35,23 +44,25 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
 
     private void initWindow() {
         // 获取wm
-        wm = WindowManagerHelper.instance.getWindowManager(this);
-        windowLayoutParams = WindowManagerHelper.instance.
-                buildWindowLayoutParams(WindowManager.LayoutParams.WRAP_CONTENT,
-                        DensityUtil.dip2px(this, 54 * 5));
+        wm = helper.getWindowManager(this);
+        // 构建布局参数 默认高为五个item
+        windowLayoutParams = helper.buildWindowLayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                DensityUtil.dip2px(this, 54 * 5));
+        // 添加到item
         wm.addView(floatRootView, windowLayoutParams);
     }
 
     private MyNestedScrollView buildApplicationListRootView() {
         MyNestedScrollView nestedScrollView = new MyNestedScrollView(this);
-        apps = getAppInfo(getBaseContext());
+        // 获取全部app
+        List<AppInfo> apps = getAppInfo(getBaseContext());
+        // 生成apps view
         ApplicationListView applicationListView = new ApplicationListView(this, apps, this);
         // 设置方向
         applicationListView.setOrientation(LinearLayout.VERTICAL);
-        // 设置根root的长宽
+        // 套一层scroll
         nestedScrollView.addView(applicationListView);
-
-//        return applicationListView;
         return nestedScrollView;
     }
 
@@ -59,6 +70,7 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
     public void onDestroy() {
         super.onDestroy();
         if (floatRootView != null) {
+            // 从屏幕上回收悬浮框
             wm.removeView(floatRootView);
         }
     }
@@ -71,14 +83,16 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
 
     @Override
     public void onTouchMove(float dx, float dy) {
+        // 禁止内部的scroll滚动，避免与move冲突
+        floatRootView.setScrollingEnabled(false);
         windowLayoutParams.x += (int) dx;
         windowLayoutParams.y += (int) dy;
-        floatRootView.setScrollingEnabled(false);
         wm.updateViewLayout(floatRootView, windowLayoutParams);
     }
 
     @Override
     public void onTouchMoveStop() {
+        // 开启滚动限制
         floatRootView.setScrollingEnabled(true);
     }
 }

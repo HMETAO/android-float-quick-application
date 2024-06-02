@@ -21,13 +21,21 @@ public class ApplicationItemView extends LinearLayout {
     private static final String TAG = ApplicationItemView.class.getSimpleName();
     private final Context context;
     public ImageView imageView;
+
+    // 检测是否move阈值
     private static final int TOUCH_MAX = 50;
-    private float mLastMotionX;
-    private float mLastMotionY;
+
+    // 最后一次触摸x
+    private float lastMotionX;
+
+    // 最后一次触摸y
+    private float lastMotionY;
+
     private final Handler handler = new Handler(Looper.myLooper());
 
     private final Runnable r = () -> needMove = true;
 
+    // 是否move标志位
     boolean needMove = false;
 
     private OnTouchMoveListener onTouchMoveListener;
@@ -66,25 +74,27 @@ public class ApplicationItemView extends LinearLayout {
                     AppInfo app = (AppInfo) getTag();
                     startApp(app);
                 } else {
+                    // move event 结束通知root修改状态
                     if (onTouchMoveListener != null)
                         onTouchMoveListener.onTouchMoveStop();
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (!needMove || Math.abs(mLastMotionX - x) > TOUCH_MAX || Math.abs(mLastMotionY - y) > TOUCH_MAX) {
+                if (!needMove || Math.abs(lastMotionX - x) > TOUCH_MAX || Math.abs(lastMotionY - y) > TOUCH_MAX) {
                     // 移动误差阈值
                     // xy方向判断
                     // 移动超过阈值，则表示移动了,就不是长按,移除 已有的Runnable回调
                     handler.removeCallbacks(r);
                 }
                 if (needMove) {
-                    // 发步移动事件
-                    float dx = event.getRawX() - mLastMotionX;
-                    float dy = event.getRawY() - mLastMotionY;
-                    mLastMotionX = event.getRawX();
-                    mLastMotionY = event.getRawY();
+                    // 发布移动事件
+                    float dx = event.getRawX() - lastMotionX;
+                    float dy = event.getRawY() - lastMotionY;
+                    lastMotionX = event.getRawX();
+                    lastMotionY = event.getRawY();
                     Log.d(TAG, "  dx: " + dx + ", dy: " + dy);
                     if (onTouchMoveListener != null) {
+                        // 通知产生move事件
                         onTouchMoveListener.onTouchMove(dx, dy);
                     }
                 }
@@ -93,8 +103,8 @@ public class ApplicationItemView extends LinearLayout {
                 // 每次按下重新计时
                 // 按下前,先移除 已有的Runnable回调,防止用户多次单击导致多次回调长按事件的bug
                 handler.removeCallbacks(r);
-                mLastMotionX = x;
-                mLastMotionY = y;
+                lastMotionX = x;
+                lastMotionY = y;
                 needMove = false;
                 // 按下时,开始计时
                 handler.postDelayed(r, 100);
