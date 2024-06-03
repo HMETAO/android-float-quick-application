@@ -51,20 +51,23 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
     // 收纳view
     private View lineView;
 
-
+    // 当个的宽
     private int itemWidth;
-    private int itemHeight = 54;
+
+    //当个的高
+    private int itemHeight;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         floatRootView = buildApplicationListRootView();
+        // 初始化基本参数
+        initParams();
         // 初始化window
         initWindow();
         return super.onStartCommand(intent, flags, startId);
     }
 
-
-    private void initWindow() {
+    private void initParams() {
         itemWidth = DensityUtil.dip2px(this, 50);
         itemHeight = DensityUtil.dip2px(this, 54);
         // 获取屏幕的宽高
@@ -72,6 +75,10 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
         screenHeight = helper.getScreenHeight(this);
         // 获取wm
         wm = helper.getWindowManager(this);
+    }
+
+
+    private void initWindow() {
         // 构建布局参数 默认高为五个item
         params = helper.buildWindowLayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT, itemHeight * 5,
