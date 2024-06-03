@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -23,24 +24,23 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        checkPermission();
     }
 
     private void checkPermission() {
         if (checkOverlayDisplayPermission()) {
             // 开启悬浮窗服务
             startService(new Intent(this, FloatService.class));
-            finish();
         } else {
-            showNeedFloatPermissionDialog();
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            intent.setData(Uri.parse("package:" + getPackageName()));
+            startActivity(intent);
+//            showNeedFloatPermissionDialog();
+            Toast.makeText(this, "请打开悬浮窗权限后在启动app", Toast.LENGTH_SHORT).show();
         }
+        finish();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // 检查权限
-        checkPermission();
-    }
 
     private boolean checkOverlayDisplayPermission() {
         // API23以后需要检查权限
