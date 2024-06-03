@@ -52,8 +52,8 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
     private View lineView;
 
 
-    private final int itemWidth = 50;
-    private final int itemHeight = 54;
+    private int itemWidth;
+    private int itemHeight = 54;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -65,6 +65,8 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
 
 
     private void initWindow() {
+        itemWidth = DensityUtil.dip2px(this, 50);
+        itemHeight = DensityUtil.dip2px(this, 54);
         // 获取屏幕的宽高
         screenWidth = helper.getScreenWidth(this);
         screenHeight = helper.getScreenHeight(this);
@@ -72,8 +74,8 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
         wm = helper.getWindowManager(this);
         // 构建布局参数 默认高为五个item
         params = helper.buildWindowLayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                DensityUtil.dip2px(this, itemHeight * 5), 0, 0);
+                WindowManager.LayoutParams.WRAP_CONTENT, itemHeight * 5,
+                screenWidth - itemWidth, screenHeight / 5);
         // 添加到item
         wm.addView(floatRootView, params);
     }
@@ -138,7 +140,6 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
     }
 
 
-
     @Override
     public void onTouchMoveStop() {
         // 开启滚动限制
@@ -159,6 +160,7 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
             scrollView.setVisibility(ViewGroup.VISIBLE);
         }
     }
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
