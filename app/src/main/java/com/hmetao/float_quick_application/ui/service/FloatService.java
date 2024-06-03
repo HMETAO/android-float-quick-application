@@ -20,6 +20,7 @@ import com.hmetao.float_quick_application.ui.widget.MyNestedScrollView;
 import com.hmetao.float_quick_application.utils.DensityUtil;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FloatService extends Service implements ApplicationItemView.OnTouchMoveListener, LineView.OnChangeViewListener {
 
@@ -92,7 +93,7 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
 
         scrollView = new MyNestedScrollView(this);
         // 获取全部app
-        List<AppInfo> apps = getAppInfo(getBaseContext());
+        List<AppInfo> apps = getAppInfo(getBaseContext()).stream().filter(appInfo -> !appInfo.packageName.equals(getPackageName())).collect(Collectors.toList());
         // 生成apps view 并注册move回调
         ApplicationListView applicationListView = new ApplicationListView(this, apps, this);
         // 设置方向
@@ -105,8 +106,7 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
         // 收纳棍高度
         int lineHeight = itemHeight * 2;
         // 初始化收纳棍
-        lineView = new LineView(this, DensityUtil.dip2px(this, 6),
-                DensityUtil.dip2px(this, lineHeight), this);
+        lineView = new LineView(this, DensityUtil.dip2px(this, 6), lineHeight, this);
         // 添加到root
         root.addView(lineView);
 
