@@ -23,7 +23,7 @@ public class ApplicationItemView extends LinearLayout {
     public ImageView imageView;
 
     // 检测是否move阈值
-    private static final int TOUCH_MAX = 50;
+    private static final int TOUCH_MAX = 100;
 
     // 最后一次触摸x
     private float lastMotionX;

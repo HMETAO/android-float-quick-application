@@ -11,17 +11,17 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
-import com.hmetao.float_quick_application.R;
 import com.hmetao.float_quick_application.domain.AppInfo;
 import com.hmetao.float_quick_application.help.WindowManagerHelper;
 import com.hmetao.float_quick_application.ui.widget.ApplicationItemView;
 import com.hmetao.float_quick_application.ui.widget.ApplicationListView;
+import com.hmetao.float_quick_application.ui.widget.LineView;
 import com.hmetao.float_quick_application.ui.widget.MyNestedScrollView;
 import com.hmetao.float_quick_application.utils.DensityUtil;
 
 import java.util.List;
 
-public class FloatService extends Service implements ApplicationItemView.OnTouchMoveListener {
+public class FloatService extends Service implements ApplicationItemView.OnTouchMoveListener, LineView.OnChangeViewListener {
 
     private static final String TAG = FloatService.class.getSimpleName();
 
@@ -52,6 +52,9 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
     private View lineView;
 
 
+    private final int itemWidth = 50;
+    private final int itemHeight = 54;
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         floatRootView = buildApplicationListRootView();
@@ -70,7 +73,7 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
         // 构建布局参数 默认高为五个item
         params = helper.buildWindowLayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
-                DensityUtil.dip2px(this, 54 * 5), 0, 0);
+                DensityUtil.dip2px(this, itemHeight * 5), 0, 0);
         // 添加到item
         wm.addView(floatRootView, params);
     }
@@ -90,17 +93,13 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
         // 添加到root
         root.addView(scrollView);
 
-        // 构建收纳view
-        lineView = new View(this);
-        // 设置虚化
-        lineView.setAlpha(0.7f);
-        // 背景色
-        lineView.setBackgroundColor(getColor(R.color.black));
-        // 隐藏
-        lineView.setVisibility(ViewGroup.GONE);
-        // 添加到root todo
-        root.addView(lineView, new LinearLayout.LayoutParams(10, 20));
-
+        // 收纳棍高度
+        int lineHeight = itemHeight * 2;
+        // 初始化收纳棍
+        lineView = new LineView(this, DensityUtil.dip2px(this, 6),
+                DensityUtil.dip2px(this, lineHeight), this);
+        // 添加到root
+        root.addView(lineView);
 
         return root;
     }
@@ -122,38 +121,55 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
         float newX = params.x + dx;
         float newY = params.y + dy;
         Log.d(TAG, "newXY: " + newX + " next  " + newY);
-        boolean check = false;
         // 判断是否超过屏幕宽
-        if (newX >= 0 && newX <= screenWidth)
+        if (newX >= 0 && newX <= screenWidth - itemWidth) {
             params.x = (int) newX;
-        else check = true; // 横向越界了触发收纳
-        // 判断是否超过屏幕高
-        if (newY >= 0 && newY <= screenHeight)
-            params.y = (int) newY;
-        Log.d(TAG, "onTouchMove: " + params.x + " next  " + params.y);
-        if (check) {
-            // 收纳
-            animateToLine();
+            isMinimized = false;
+        } else {
+            params.x = newX < 0 ? 0 : screenWidth;
+            isMinimized = true; // 横向越界了触发收纳
         }
+        // 判断是否超过屏幕高
+        if (newY >= 0 && newY <= screenHeight) params.y = (int) newY;
+        Log.d(TAG, "onTouchMove: " + params.x + " next  " + params.y);
         // 设置透明虚化背景
         floatRootView.setAlpha(0.5f);
         wm.updateViewLayout(floatRootView, params);
     }
 
-    private void animateToLine() {
-        lineView.setVisibility(ViewGroup.VISIBLE);
-        scrollView.setVisibility(ViewGroup.GONE);
-    }
+
 
     @Override
     public void onTouchMoveStop() {
         // 开启滚动限制
         scrollView.setScrollingEnabled(true);
         floatRootView.setAlpha(1);
+        if (isMinimized) {
+            // 收纳
+            onChangeVisibleOrGone(scrollView);
+        }
     }
 
+    public void onChangeVisibleOrGone(View view) {
+        if (view.equals(scrollView)) {
+            lineView.setVisibility(ViewGroup.VISIBLE);
+            scrollView.setVisibility(ViewGroup.GONE);
+        } else {
+            lineView.setVisibility(ViewGroup.GONE);
+            scrollView.setVisibility(ViewGroup.VISIBLE);
+        }
+    }
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    @Override
+    public void onMaximize(View visibleView, float rawX) {
+        if ((int) rawX > screenWidth / 2) {
+            params.x = screenWidth - itemWidth;
+        }
+        onChangeVisibleOrGone(visibleView);
+        wm.updateViewLayout(floatRootView, params);
     }
 }

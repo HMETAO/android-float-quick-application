@@ -7,9 +7,4 @@
     android:orientation="horizontal"
     tools:context=".ui.activity.MainActivity">
 
-    <TextView
-        android:layout_width="10dp"
-        android:layout_height="wrap_content"
-        android:text="Hello World!" />
-
 </LinearLayout>
