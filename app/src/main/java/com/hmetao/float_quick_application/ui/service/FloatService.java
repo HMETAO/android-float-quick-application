@@ -50,7 +50,7 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
     private MyNestedScrollView scrollView;
 
     // 收纳view
-    private View lineView;
+    private LineView lineView;
 
     // 当个的宽
     private int itemWidth;
@@ -60,9 +60,9 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        floatRootView = buildApplicationListRootView();
         // 初始化基本参数
         initParams();
+        floatRootView = buildApplicationListRootView();
         // 初始化window
         initWindow();
         return super.onStartCommand(intent, flags, startId);
@@ -156,6 +156,7 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
             // 收纳
             onChangeVisibleOrGone(scrollView);
         }
+        wm.updateViewLayout(floatRootView, params);
     }
 
     public void onChangeVisibleOrGone(View view) {
