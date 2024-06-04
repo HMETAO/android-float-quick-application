@@ -4,6 +4,7 @@ import static com.hmetao.float_quick_application.utils.AppUtil.getAppInfo;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
@@ -148,6 +149,12 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
 
 
     @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        screenWidth = helper.getScreenWidth(this);
+        screenHeight = helper.getScreenHeight(this);
+    }
+
+    @Override
     public void onTouchMoveStop() {
         // 开启滚动限制
         scrollView.setScrollingEnabled(true);
@@ -156,7 +163,6 @@ public class FloatService extends Service implements ApplicationItemView.OnTouch
             // 收纳
             onChangeVisibleOrGone(scrollView);
         }
-        wm.updateViewLayout(floatRootView, params);
     }
 
     public void onChangeVisibleOrGone(View view) {
